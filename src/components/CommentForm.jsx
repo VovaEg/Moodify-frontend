@@ -1,14 +1,11 @@
-// src/components/CommentForm.jsx
 import React, { useState } from 'react';
 import postService from '../services/postService';
 import authService from '../services/authService';
 
-// --- Импорты React Bootstrap ---
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
-// --- Конец импортов ---
 
 
 function CommentForm({ postId, onCommentSubmitted }) {

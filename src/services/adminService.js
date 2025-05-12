@@ -1,17 +1,18 @@
 // src/services/adminService.js
 import apiClient from './apiClient'; // Используем настроенный клиент с токеном
 
-const API_URL = '/admin'; // Базовый путь для админских запросов (относительно baseURL в apiClient)
+// Базовый путь для всех админских запросов (относительно baseURL, установленного в apiClient)
+const API_URL_PREFIX = '/admin';
 
 /**
  * Получает страницу пользователей (требует прав админа).
- * @param {number} page - Номер страницы.
- * @param {number} size - Размер страницы.
- * @returns {Promise}
+ * @param {number} page - Номер страницы (начиная с 0).
+ * @param {number} size - Количество пользователей на странице.
+ * @returns {Promise} - Promise от axios запроса.
  */
-const getAllUsers = (page = 0, size = 20) => {
-    // GET /admin/users?page=0&size=20
-    return apiClient.get(`${API_URL}/users`, {
+const getAllUsers = (page = 0, size = 10) => { // Уменьшил дефолтный size для примера
+    // GET /api/admin/users?page=0&size=10
+    return apiClient.get(`${API_URL_PREFIX}/users`, {
         params: { page, size }
     });
 };
@@ -21,9 +22,9 @@ const getAllUsers = (page = 0, size = 20) => {
  * @param {number | string} postId - ID поста.
  * @returns {Promise}
  */
-const deletePost = (postId) => {
-    // DELETE /admin/posts/{postId}
-    return apiClient.delete(`${API_URL}/posts/${postId}`);
+const deletePostAsAdmin = (postId) => {
+    // DELETE /api/admin/posts/{postId}
+    return apiClient.delete(`${API_URL_PREFIX}/posts/${postId}`);
 };
 
 /**
@@ -31,23 +32,27 @@ const deletePost = (postId) => {
  * @param {number | string} commentId - ID комментария.
  * @returns {Promise}
  */
-const deleteComment = (commentId) => {
-     // DELETE /admin/comments/{commentId}
-    return apiClient.delete(`${API_URL}/comments/${commentId}`);
+const deleteCommentAsAdmin = (commentId) => {
+    // DELETE /api/admin/comments/{commentId}
+    return apiClient.delete(`${API_URL_PREFIX}/comments/${commentId}`);
 };
 
+/**
+ * Удаляет пользователя по ID (выполняется админом).
+ * @param {number | string} userId - ID пользователя.
+ * @returns {Promise}
+ */
+const deleteUser = (userId) => {
+    // DELETE /api/admin/users/{userId}
+    return apiClient.delete(`${API_URL_PREFIX}/users/${userId}`);
+};
 
-// TODO: Добавить функции для удаления/бана пользователей, если они будут реализованы на бэкенде
-// const deleteUser = (userId) => apiClient.delete(`${API_URL}/users/${userId}`);
-// const setUserEnabled = (userId, enabled) => apiClient.put(`${API_URL}/users/${userId}/${enabled ? 'enable' : 'disable'}`);
-
-
+// Собираем все функции в один объект для экспорта
 const adminService = {
     getAllUsers,
-    deletePost,
-    deleteComment
-    // deleteUser,
-    // setUserEnabled
+    deletePostAsAdmin,
+    deleteCommentAsAdmin,
+    deleteUser
 };
 
 export default adminService;
