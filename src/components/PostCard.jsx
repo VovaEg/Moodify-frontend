@@ -56,7 +56,7 @@ function PostCard({ post, onPostDeleted }) {
         setCurrentCommentCount(count => count + 1);
         setRefreshCommentListKey(prevKey => prevKey + 1);
     };
-    const handleCommentDeleted = (deletedCommentId) => {
+    const handleCommentDeleted = () => {
         setCurrentCommentCount(count => Math.max(0, count - 1));
         setRefreshCommentListKey(prevKey => prevKey + 1);
     };
@@ -81,6 +81,7 @@ function PostCard({ post, onPostDeleted }) {
     const formatDate = (dateString) => {
         if (!dateString) return '';
         try { return new Date(dateString).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } // Формат покороче
+            // eslint-disable-next-line no-unused-vars
         catch (error) { return dateString; }
     };
 

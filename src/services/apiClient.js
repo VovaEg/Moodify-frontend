@@ -1,41 +1,42 @@
 // src/services/apiClient.js
 import axios from 'axios';
-import authService from './authService'; // Импортируем сервис аутентификации
+import authService from './authService'; // Используется для получения токена
 
-// Базовый URL для всех запросов к нашему API (кроме /api/auth)
-const API_BASE_URL = 'http://localhost:8080/api'; // Обратите внимание, без /auth/
+const ENV_API_BASE_URL = import.meta.env.VITE_API_URL;
 
-// Создаем экземпляр axios с базовым URL
+if (!ENV_API_BASE_URL) {
+    console.error(
+        "VITE_API_URL is not defined in your environment variables (.env file or build arguments). " +
+        "Falling back to 'http://localhost:8080/api' for development."
+    );
+}
+
+const resolvedApiBaseUrl = ENV_API_BASE_URL || 'http://localhost:8080/api';
+console.debug("apiClient baseURL resolved to:", resolvedApiBaseUrl); // Для отладки
+
 const apiClient = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: resolvedApiBaseUrl, // Используем разрешенный URL
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// Добавляем "перехватчик" (interceptor) запросов
+// Interceptor для добавления токена авторизации
 apiClient.interceptors.request.use(
     (config) => {
-        // Получаем данные пользователя (включая токен) из localStorage
-        const user = authService.getCurrentUser();
-
-        // Если пользователь есть и у него есть токен
+        const user = authService.getCurrentUser(); // Получаем текущего пользователя (с токеном)
         if (user && user.token) {
-            // Добавляем заголовок Authorization к КАЖДОМУ запросу,
-            // отправленному через этот экземпляр apiClient
             config.headers['Authorization'] = 'Bearer ' + user.token;
-            console.debug("ApiClient: Added Auth token to request header for path:", config.url); // Для отладки
+            // console.debug("ApiClient: Added Auth token to request header for path:", config.url);
         } else {
-            console.debug("ApiClient: No token found, request sent without Auth header for path:", config.url);
+            // console.debug("ApiClient: No token found, request sent without Auth header for path:", config.url);
         }
-        return config; // Возвращаем измененную конфигурацию запроса
+        return config;
     },
     (error) => {
-        // Обработка ошибки при настройке запроса (маловероятно)
         console.error("ApiClient Request Interceptor Error:", error);
         return Promise.reject(error);
     }
 );
 
-// Экспортируем настроенный экземпляр axios
 export default apiClient;

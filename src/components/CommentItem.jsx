@@ -1,6 +1,5 @@
 // src/components/CommentItem.jsx
 import React, { useState } from 'react';
-import authService from '../services/authService';
 import postService from '../services/postService';
 
 // --- Импорты React Bootstrap ---
@@ -35,6 +34,7 @@ function CommentItem({ comment, currentUser, onDelete }) {
     const formatDate = (dateString) => {
         if (!dateString) return '';
         try { return new Date(dateString).toLocaleString('uk-UA', { hour: '2-digit', minute: '2-digit' }); } // Более короткий формат времени
+            // eslint-disable-next-line no-unused-vars
         catch (error) { return dateString; }
     };
 

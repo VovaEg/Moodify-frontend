@@ -15,7 +15,7 @@ function CommentList({ postId, onDelete }) {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(0);
+    const [page] = useState(0);
     const currentUser = authService.getCurrentUser();
 
     useEffect(() => {
